@@ -1,0 +1,10 @@
+{
+  "name": "FaceAuth",
+  "short_name": "FaceAuth",
+  "description": "안전한 얼굴 인증 서비스",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0a0e1a",
+  "icons": []
+}
