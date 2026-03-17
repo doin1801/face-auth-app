@@ -1,8 +1,24 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
+const ALL_HISTORY = [
+  { time: "오늘 09:23", status: "성공", detail: "얼굴 인증 완료", rate: 97 },
+  { time: "어제 18:45", status: "성공", detail: "얼굴 인증 완료", rate: 94 },
+  { time: "어제 08:12", status: "실패", detail: "얼굴 인식 불일치", rate: 41 },
+  { time: "2일 전 14:30", status: "성공", detail: "얼굴 인증 완료", rate: 96 },
+  { time: "2일 전 09:05", status: "성공", detail: "얼굴 인증 완료", rate: 92 },
+  { time: "3일 전 20:11", status: "실패", detail: "얼굴 인식 불일치", rate: 38 },
+  { time: "3일 전 07:48", status: "성공", detail: "얼굴 인증 완료", rate: 95 },
+  { time: "4일 전 17:22", status: "성공", detail: "얼굴 인증 완료", rate: 91 },
+  { time: "5일 전 10:55", status: "실패", detail: "얼굴 인식 불일치", rate: 55 },
+  { time: "5일 전 08:30", status: "성공", detail: "얼굴 인증 완료", rate: 98 },
+];
+
 export default function Home() {
+  const [showHistory, setShowHistory] = useState(false);
+
   return (
     <main className="flex flex-col min-h-dvh px-6 py-10 bg-[#0a0e1a]">
       {/* 상단 헤더 */}
@@ -127,7 +143,12 @@ export default function Home() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-[#8a9cc4]">최근 인증 내역</h2>
-          <button className="text-xs text-[#4f7cff]">전체 보기</button>
+          <button
+            onClick={() => setShowHistory(true)}
+            className="text-xs text-[#4f7cff] active:opacity-60 transition-opacity"
+          >
+            전체 보기
+          </button>
         </div>
         <div className="flex flex-col gap-2">
           {[
@@ -179,6 +200,115 @@ export default function Home() {
           </span>
         </div>
       </div>
+
+      {/* ── 전체 인증 내역 모달 ──────────────────────────────── */}
+      {showHistory && (
+        <div
+          className="fixed inset-0 z-50 flex items-end bg-black/60 backdrop-blur-sm"
+          onClick={() => setShowHistory(false)}
+        >
+          <div
+            className="w-full max-w-[430px] mx-auto bg-[#0d1526] rounded-t-3xl border-t border-x border-[#1a2744] pb-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 핸들 */}
+            <div className="flex justify-center pt-3 pb-4">
+              <div className="w-10 h-1 rounded-full bg-[#1a2744]" />
+            </div>
+
+            {/* 헤더 */}
+            <div className="flex items-center justify-between px-5 mb-4">
+              <h2 className="text-base font-bold text-white">전체 인증 내역</h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="w-8 h-8 rounded-xl bg-[#141e35] flex items-center justify-center active:scale-95 transition-transform"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b8fd4" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            {/* 통계 칩 */}
+            <div className="flex gap-2 px-5 mb-4">
+              {[
+                {
+                  label: "전체",
+                  value: ALL_HISTORY.length,
+                  color: "text-white",
+                  bg: "bg-[#141e35]",
+                },
+                {
+                  label: "성공",
+                  value: ALL_HISTORY.filter((h) => h.status === "성공").length,
+                  color: "text-[#4ade80]",
+                  bg: "bg-[#0d2a1e]",
+                },
+                {
+                  label: "실패",
+                  value: ALL_HISTORY.filter((h) => h.status === "실패").length,
+                  color: "text-[#f87171]",
+                  bg: "bg-[#2a0d0d]",
+                },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${s.bg}`}
+                >
+                  <span className={`text-sm font-bold ${s.color}`}>{s.value}</span>
+                  <span className="text-xs text-[#4a5a7a]">{s.label}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* 목록 */}
+            <div className="flex flex-col gap-1.5 px-5 max-h-72 overflow-y-auto">
+              {ALL_HISTORY.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#0a0e1a] border border-[#141e35]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
+                        item.status === "성공"
+                          ? "bg-[#0d2a1e] text-[#4ade80]"
+                          : "bg-[#2a0d0d] text-[#f87171]"
+                      }`}
+                    >
+                      {item.status === "성공" ? "✓" : "✕"}
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-[#c0cceb]">{item.detail}</p>
+                      <p className="text-[10px] text-[#3d4f6e] mt-0.5">{item.time}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5">
+                    <span
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        item.status === "성공"
+                          ? "bg-[#0d2a1e] text-[#4ade80]"
+                          : "bg-[#2a0d0d] text-[#f87171]"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                    <span
+                      className="text-[10px] font-bold"
+                      style={{
+                        color: item.rate >= 90 ? "#4ade80" : item.rate >= 70 ? "#facc15" : "#f87171",
+                      }}
+                    >
+                      {item.rate}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
